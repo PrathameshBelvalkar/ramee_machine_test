@@ -46,3 +46,5 @@ cd example-app
   ```bash
   php artisan serve
   ```
+
+Added Postman Collection for testing
