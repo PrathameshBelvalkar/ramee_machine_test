@@ -83,7 +83,10 @@ export default function ProductTable({ productData, onUpdate, setProductData }) 
                             </tr>
                         ))}
                         <tr>
-                            <td colSpan="6" className="bg-secondary-subtle text-end fw-bold">
+                            <td colSpan="5">
+
+                            </td>
+                            <td className="bg-secondary-subtle text-end fw-bold">
                                 Grand Total
                             </td>
                             <td className="bg-secondary-subtle fw-bold">
