@@ -100,7 +100,7 @@ export default function ProductTable({ productData, onUpdate, setProductData }) 
                         onClick={handleSaveInvoice}
                         disabled={saveInvoiceMutation.isLoading || productData.length === 0}
                     >
-                        {saveInvoiceMutation.isLoading ? 'Saving...' : 'Save and View Invoice'}
+                        {saveInvoiceMutation.isLoading ? 'Saving...' : 'Save & View Invoice'}
                     </Button>
                 </div>
             </div>
