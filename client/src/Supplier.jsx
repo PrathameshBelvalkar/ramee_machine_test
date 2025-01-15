@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
-import { Button, FormGroup, Input } from "reactstrap";
+import { FormGroup, Input } from "reactstrap";
 import { getSuppliers, getProductBysupplier } from './api/getApi';
 import ProductTable from './ProductTable';
+import { toast } from 'react-toastify';
 
 export default function Supplier() {
     const { data: supplierData } = useQuery({
@@ -11,7 +12,6 @@ export default function Supplier() {
     });
 
     const [supplier, setSupplier] = useState(null);
-    const [selectedProduct, setSelectedProduct] = useState(null);
     const [addedProducts, setAddedProducts] = useState([]);
 
     const { data: productData } = useQuery({
@@ -20,37 +20,31 @@ export default function Supplier() {
         enabled: !!supplier,
     });
 
-    useEffect(() => {
-        if (supplierData && supplierData.length > 0) {
-            setSupplier(supplierData[0].id);
-        }
-    }, [supplierData]);
+    // useEffect(() => {
+    //     if (supplierData && supplierData.length > 0) {
+    //         setSupplier(supplierData[0].id);
+    //     }
+    // }, [supplierData]);
 
     const handleSupplierChange = (event) => {
         setSupplier(event.target.value);
-        setSelectedProduct(null);
     };
 
     const handleProductChange = (event) => {
         const productId = event.target.value;
         const product = productData.find((item) => item.id === parseInt(productId));
-        setSelectedProduct(product);
-    };
-
-    const handleAddProduct = () => {
-        if (selectedProduct) {
-            const isAlreadyAdded = addedProducts.some((product) => product.id === selectedProduct.id);
-
+        if (product) {
+            const isAlreadyAdded = addedProducts.some((p) => p.id === product.id);
             if (!isAlreadyAdded) {
                 const productWithDefaults = {
-                    ...selectedProduct,
+                    ...product,
                     quantity: 1,
-                    cost: selectedProduct.cost,
+                    cost: product.cost,
                 };
                 setAddedProducts((prevProducts) => [...prevProducts, productWithDefaults]);
-                setSelectedProduct(null);
             } else {
-                alert("Product is already taken.");
+                // alert("Product is already added.");
+                toast.error("Product is already added.");
             }
         }
     };
@@ -58,7 +52,17 @@ export default function Supplier() {
     const handleProductUpdate = (id, field, value) => {
         setAddedProducts((prevProducts) =>
             prevProducts.map((product) =>
-                product.id === id ? { ...product, [field]: value } : product
+                product.id === id
+                    ? {
+                        ...product,
+                        [field]:
+                            field === "quantity" && value < 1
+                                ? 1
+                                : field === "cost" && value <= 0
+                                    ? product.cost
+                                    : value,
+                    }
+                    : product
             )
         );
     };
@@ -97,7 +101,6 @@ export default function Supplier() {
                             type="select"
                             placeholder='Select Product'
                             onChange={handleProductChange}
-                            value={selectedProduct?.id || ""}
                         >
                             <option value="">Select Product</option>
                             {productData && productData.map((product) => (
@@ -106,18 +109,6 @@ export default function Supplier() {
                                 </option>
                             ))}
                         </Input>
-                    </FormGroup>
-                </div>
-                <div className='d-flex gap-3 align-items-baseline ms-4'>
-                    <FormGroup>
-                        <Button
-                            color='primary'
-                            className='rounded-0'
-                            onClick={handleAddProduct}
-                            disabled={!selectedProduct}
-                        >
-                            <span>+</span> Add Product
-                        </Button>
                     </FormGroup>
                 </div>
             </div>

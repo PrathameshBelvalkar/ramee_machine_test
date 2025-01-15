@@ -3,6 +3,7 @@ import { Button, Table, Input } from 'reactstrap';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { saveInvoice } from './api/postApi';
 import InvoicesTable from './InvoicesTable';
+import { toast } from 'react-toastify';
 
 export default function ProductTable({ productData, onUpdate, setProductData }) {
     const queryClient = useQueryClient();
@@ -21,11 +22,13 @@ export default function ProductTable({ productData, onUpdate, setProductData }) 
         onSuccess: (data) => {
             setProductData([]);
             queryClient.invalidateQueries(['invoice']);
-            alert('Invoice saved successfully!');
+            // alert('Invoice saved successfully!');
+            toast.success('Invoice saved successfully!');
         },
         onError: (error) => {
             console.error(error);
-            alert('Failed to save invoice. Please try again.');
+            // alert('Failed to save invoice. Please try again.');
+            toast.error('Failed to save invoice. Please try again.');
         },
     });
 
@@ -80,29 +83,30 @@ export default function ProductTable({ productData, onUpdate, setProductData }) 
                             </tr>
                         ))}
                         <tr>
-                            <td colSpan='6' className='bg-secondary-subtle text-end'>
+                            <td colSpan="6" className="bg-secondary-subtle text-end fw-bold">
                                 Grand Total
                             </td>
-                            <td className='bg-secondary-subtle'>
+                            <td className="bg-secondary-subtle fw-bold">
                                 {calculateGrandTotal().toFixed(2)}
                             </td>
                         </tr>
+
                     </tbody>
                 </Table>
+
                 <div className='d-flex justify-content-end'>
                     <Button
-                        color='primary'
-                        className='rounded-0'
+                        className='bg-body-secondary border-black btn fw-bold text-dark'
                         onClick={handleSaveInvoice}
-                        disabled={saveInvoiceMutation.isLoading}
+                        disabled={saveInvoiceMutation.isLoading || productData.length === 0}
                     >
                         {saveInvoiceMutation.isLoading ? 'Saving...' : 'Save and View Invoice'}
                     </Button>
                 </div>
             </div>
-            <div>
+            {/* <div>
                 <InvoicesTable />
-            </div>
+            </div> */}
         </>
     );
 }
